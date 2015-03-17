@@ -8,5 +8,4 @@ class UserManagementSystem < Grape::API
 	get '/user' do
 		status 200
 	end
-
 end
