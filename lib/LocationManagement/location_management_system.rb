@@ -29,11 +29,11 @@ class LocationManagementSystem < Grape::API
 			}
 			id += 1
 			size += 1
+			status 200
 			locations.push new_location
 		end
 
 		delete ":id" do
-			p params["id"]
 			locations.delete_if { | l | l[:id] == params["id"].to_i }
 			if locations.length < size
 				# Successfully deleted location
