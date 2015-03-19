@@ -28,7 +28,7 @@ describe 'Location Management System' do
 
   it 'should create locations' do
     post '/locations', params, headers
-    expect(last_response.status).to eq(200)
+    expect(last_response.status).to eq(201)
   end
 
   it 'should get locations' do
@@ -49,7 +49,7 @@ describe 'Location Management System' do
 
 
   it 'should delete locations' do
-    delete '/locations/1'
+    delete '/location/1'
     expect(last_response).to be_ok
   end
 
