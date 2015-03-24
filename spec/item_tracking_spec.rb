@@ -31,7 +31,7 @@ describe 'Item Management System' do
     expect(last_response.status).to eq(201)
   end
 
-  it 'should get item' do
+  it 'should get items' do
     get '/items'
 
     expected = [
@@ -48,7 +48,7 @@ describe 'Item Management System' do
 
 
 
-  it 'should delete item' do
+  it 'should delete an item' do
     delete '/item/1'
     expect(last_response).to be_ok
   end
