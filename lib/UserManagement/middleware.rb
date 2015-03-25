@@ -7,9 +7,9 @@ class Middleware
 
 	def call(env)
 		encoded_user = env['HTTP_AUTHORIZATION']
+
 		if(!encoded_user.nil?)
 			username, password = Base64.decode64(encoded_user.gsub(/^Basic /, '')).split(":")
-
 			if username == "wanda" && password == "partyhard2000" || username == "paul" && password == "thepanther" || username == "anne" && password == "flytothemoon"
 				@app.call(env)
 			else
