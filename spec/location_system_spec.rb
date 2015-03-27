@@ -9,10 +9,13 @@ require_relative '../lib/LocationManagement/location_management_system'
 describe 'Location Management System' do
   include Rack::Test::Methods
 
-  def app
-    LocationManagementSystem.new
-  end
-
+  let(:app) {
+    Rack::Builder.new {
+      map "/locations" do
+        run LocationManagementSystem
+      end
+    }
+  }
   let(:params) {
     {
       name: "Office Alexanderstraße",
@@ -49,7 +52,7 @@ describe 'Location Management System' do
 
 
   it 'should delete locations' do
-    delete '/location/1'
+    delete '/locations/1'
     expect(last_response).to be_ok
   end
 

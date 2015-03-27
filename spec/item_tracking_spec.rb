@@ -9,9 +9,13 @@ require_relative '../lib/ItemTracking/item_tracking_system'
 describe 'Item Management System' do
   include Rack::Test::Methods
 
-  def app
-    ItemTrackingSystem.new
-  end
+  let(:app) {
+    Rack::Builder.new {
+      map '/items' do
+        run ItemTrackingSystem
+      end
+    }
+  }
 
   let(:params) {
     {
@@ -49,7 +53,7 @@ describe 'Item Management System' do
 
 
   it 'should delete an item' do
-    delete '/item/1'
+    delete '/items/1'
     expect(last_response).to be_ok
   end
 

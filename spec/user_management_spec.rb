@@ -12,8 +12,10 @@ describe 'User Management' do
 
   let(:app) {
     Rack::Builder.new {
-      use Middleware
-      run UserManagementSystem.new
+      map "/user" do
+        use Middleware
+        run UserManagementSystem
+      end
     }
   }
 
