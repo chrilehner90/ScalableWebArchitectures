@@ -5,8 +5,6 @@ require 'rspec'
 require 'rack/test'
 #require "capybara"
 
-OUTER_APP, OPTIONS = Rack::Builder.parse_file('./config.ru')
-
 require_relative '../lib/UserManagement/user_management_system'
 require_relative '../lib/ItemTracking/item_tracking_system'
 require_relative '../lib/LocationManagement/location_management_system'
@@ -17,23 +15,25 @@ describe 'Reports System' do
   include Rack::Test::Methods
 
   let(:app) {
-    OUTER_APP
+    Rack::Builder.new {
+        map '/user' do
+            use Middleware
+            run UserManagementSystem
+        end
+
+        map '/items' do
+            run ItemTrackingSystem
+        end
+
+        map '/locations' do
+            run LocationManagementSystem
+        end
+
+        map '/reports' do
+            run ReportsSystem
+        end
+    }
   }
-
-  # starts all services with the config file
-  before(:all) do
-    @pid = Process.fork do
-      Dir.chdir(File.expand_path("../../", __FILE__))
-      exec "rackup -o 0.0.0.0 config.ru"
-    end
-    sleep 3
-  end
-
-  # kills the LocationManagementAPI and ItemTrackingAPI by console commands
-  after(:all) do
-    Process.kill "INT", @pid
-    Process.wait
-  end
 
   let(:location) {
     {
@@ -79,9 +79,11 @@ describe 'Reports System' do
 
   it 'should get locations and their items' do
     post '/locations', location, headers
+    p last_response.body
     post '/items', item, headers
     post '/items', item, headers
     get '/reports/by-location'
+    p last_response.body
     expect(last_response.status).to eq(200)
   end
 end
