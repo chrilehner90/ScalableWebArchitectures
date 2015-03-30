@@ -1,5 +1,6 @@
 require 'grape'
 require_relative '../filter_helper'
+require_relative '../client'
 
 class LocationManagementSystem < Grape::API
 	version 'v1', using: :header, vendor: 'project'
@@ -10,8 +11,17 @@ class LocationManagementSystem < Grape::API
 	id = 1
 	size = locations.length
 
+	helpers do
+		def authenticate!
+			status = FilterHelper.auth_helper(Client, env)
+			error!("403 Forbidden", status.code) unless status.code == 200
+		end
+	end
 
+
+	desc "return locations"
 	get do
+		authenticate!
 		locations
 	end
 
@@ -20,7 +30,9 @@ class LocationManagementSystem < Grape::API
 		requires :name, type: String
 		requires :address, type: String
 	end
+	desc "create new location"
 	post do
+		authenticate!
 		new_location = {
 			"name": params["name"],
 			"address": params["address"],
@@ -33,7 +45,9 @@ class LocationManagementSystem < Grape::API
 		new_location
 	end
 	
+	desc "delete location by id"
 	delete ":id" do
+		authenticate!
 		locations.delete_if { | l | l[:id] == params["id"].to_i }
 		if locations.length < size
 			# Successfully deleted location

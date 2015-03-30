@@ -14,19 +14,19 @@ require File.expand_path('../lib/ItemTracking/item_tracking_system', __FILE__)
 app = Rack::Builder.new {
     map '/user' do
         use Middleware
-        run UserManagementSystem.new
+        run UserManagementSystem
     end
 
     map '/items' do
-        run ItemTrackingSystem.new
+        run ItemTrackingSystem
     end
 
     map '/locations' do
-        run LocationManagementSystem.new
+        run LocationManagementSystem
     end
 
     map '/reports' do
-        run ReportsSystem.new
+        run ReportsSystem
     end
 }
 

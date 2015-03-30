@@ -11,6 +11,12 @@ To start services use the following commands:
 	rackup -o 0.0.0.0 config.ru
 ```
 
+## How to run the tests
+To run the automated tests with Rspec, please start the server first. And restart the server after each call of the Rspec command
+After many hours of trying to test the ReportSystem i decided to send its requests with Ruby's "system" command to ensure that the requests arrive correclty.
+- Start the server in a Terminal window with the command above
+- Type "rspec" in another Terminal window in the root folder to test with Rspec
+
 ## The system
 
 This distributed system consists of four subsystems. These subsystems communicate via HTTP with each other.

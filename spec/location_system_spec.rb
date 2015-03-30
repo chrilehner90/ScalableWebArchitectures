@@ -29,31 +29,57 @@ describe 'Location Management System' do
     }
   }
 
-  it 'should create locations' do
-    post '/locations', params, headers
-    expect(last_response.status).to eq(201)
+  describe "authorized access" do
+    before(:each) do
+      basic_authorize("wanda", "partyhard2000")
+    end
+
+    it 'should create locations' do
+      post '/locations', params, headers
+      expect(last_response.status).to eq(201)
+    end
+
+    it 'should get locations' do
+      get '/locations'
+
+      expected = [
+        { 
+          "name" => "Office Alexanderstraße",
+          "address" => "Alexanderstraße 45, 33853 Bielefeld, Germany",
+          "id" => 1
+        }
+      ]
+
+      expect(last_response).to be_ok
+      expect(JSON.parse(last_response.body)).to eq(expected)
+    end
+
+
+
+    it 'should delete locations' do
+      delete '/locations/1'
+      expect(last_response).to be_ok
+    end
   end
 
-  it 'should get locations' do
-    get '/locations'
+  describe "unauthorized access" do
 
-    expected = [
-      { 
-        "name" => "Office Alexanderstraße",
-        "address" => "Alexanderstraße 45, 33853 Bielefeld, Germany",
-        "id" => 1
-      }
-    ]
+    it 'should not create locations' do
+      post '/locations', params, headers
+      expect(last_response.status).to eq(403)
+    end
 
-    expect(last_response).to be_ok
-    expect(JSON.parse(last_response.body)).to eq(expected)
-  end
+    it 'should not get locations' do
+      get '/locations'
+      expect(last_response.status).to eq(403)
+    end
 
 
 
-  it 'should delete locations' do
-    delete '/locations/1'
-    expect(last_response).to be_ok
+    it 'should not delete locations' do
+      delete '/locations/1'
+      expect(last_response.status).to eq(403)
+    end
   end
 
 end

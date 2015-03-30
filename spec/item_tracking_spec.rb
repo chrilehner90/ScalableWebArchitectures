@@ -30,31 +30,56 @@ describe 'Item Management System' do
     }
   }
 
-  it 'should create items' do
-    post '/items', params, headers
-    expect(last_response.status).to eq(201)
+  describe "authorized access" do
+    before(:each) do
+      basic_authorize("wanda", "partyhard2000")
+    end
+
+    it 'should create items' do
+      post '/items', params, headers
+      expect(last_response.status).to eq(201)
+    end
+
+    it 'should get items' do
+      get '/items'
+
+      expected = [
+        { 
+          "name" => "Christians PC",
+          "location" => 1,
+          "id" => 1
+        }
+      ]
+
+      expect(last_response).to be_ok
+      expect(JSON.parse(last_response.body)).to eq(expected)
+    end
+
+
+
+    it 'should delete an item' do
+      delete '/items/1'
+      expect(last_response).to be_ok
+    end
   end
 
-  it 'should get items' do
-    get '/items'
+  describe "unauthorized access" do
 
-    expected = [
-      { 
-        "name" => "Christians PC",
-        "location" => 1,
-        "id" => 1
-      }
-    ]
+    it 'should not create items' do
+      post '/items', params, headers
+      expect(last_response.status).to eq(403)
+    end
 
-    expect(last_response).to be_ok
-    expect(JSON.parse(last_response.body)).to eq(expected)
+    it 'should not get items' do
+      get '/items'
+      expect(last_response.status).to eq(403)
+    end
+
+
+
+    it 'should not delete an item' do
+      delete '/items/1'
+      expect(last_response.status).to eq(403)
+    end
   end
-
-
-
-  it 'should delete an item' do
-    delete '/items/1'
-    expect(last_response).to be_ok
-  end
-
 end

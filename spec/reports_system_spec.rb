@@ -3,7 +3,6 @@ ENV['RACK_ENV'] = 'test'
 require 'json'
 require 'rspec'
 require 'rack/test'
-#require "capybara"
 
 require_relative '../lib/UserManagement/user_management_system'
 require_relative '../lib/ItemTracking/item_tracking_system'
@@ -16,36 +15,9 @@ describe 'Reports System' do
 
   let(:app) {
     Rack::Builder.new {
-        map '/user' do
-            use Middleware
-            run UserManagementSystem
-        end
-
-        map '/items' do
-            run ItemTrackingSystem
-        end
-
-        map '/locations' do
-            run LocationManagementSystem
-        end
-
         map '/reports' do
             run ReportsSystem
         end
-    }
-  }
-
-  let(:location) {
-    {
-      name: "Office Alexanderstraße",
-      address: "Alexanderstraße 45, 33853 Bielefeld, Germany"
-    }
-  }
-
-  let(:item) {
-    {
-      name: "Christians PC",
-      location: 1
     }
   }
 
@@ -58,32 +30,44 @@ describe 'Reports System' do
   let(:expected) {
     [
       {
-        "name" => "Office Alexanderstraße",
-        "address" => "Alexanderstraße 45, 33853 Bielefeld, Germany",
+        "name" => "Test Location",
+        "address" => "Test Strasse 1",
         "id" => 1,
         "items" => [
           {
-            "name" => "Christians PC",
+            "name" => "Test PC",
             "location" => 1,
             "id" => 1
+          },
+          {
+            "name" => "Test PC",
+            "location" => 1,
+            "id" => 2
           }
         ]
       }
     ]
   }
 
-  before(:each) do
-    basic_authorize("wanda", "partyhard2000")
-  end
-  
+  describe "authorized access" do
+    before(:each) do
+      basic_authorize("wanda", "partyhard2000")
+    end
 
-  it 'should get locations and their items' do
-    post '/locations', location, headers
-    p last_response.body
-    post '/items', item, headers
-    post '/items', item, headers
-    get '/reports/by-location'
-    p last_response.body
-    expect(last_response.status).to eq(200)
+    it 'should get locations and their items' do
+      system("httparty -H accept:application/vnd.project-v1+json -u wanda:partyhard2000 -a post -d 'name=Test Location&address=Test Strasse 1' http://localhost:9292/locations")
+      system("httparty -H accept:application/vnd.project-v1+json -u wanda:partyhard2000 -a post -d 'name=Test PC&location=1' http://localhost:9292/items")
+      system("httparty -H accept:application/vnd.project-v1+json -u wanda:partyhard2000 -a post -d 'name=Test PC&location=1' http://localhost:9292/items")
+      get '/reports/by-location'
+      expect(last_response.status).to eq(200)
+      expect(JSON.parse(last_response.body)).to eq(expected)
+    end
+  end
+
+  describe "unauthorized access" do
+    it 'should not get locations and their items' do
+      get '/reports/by-location'
+      expect(last_response.status).to eq(403)
+    end
   end
 end
