@@ -238,3 +238,12 @@ Requests shall have an empty body. Returns status ``200`` and a JSON encoded arr
   }
 ]
 ```
+
+## 12 Factor
+This system obeys some of the principles of the 12 Factor Manifesto. Some of them didn't make sense, because it's too small.
+Some of the principles are:
+- Codebase
+- Dependencies
+- Processes
+- Port binding
+- ...

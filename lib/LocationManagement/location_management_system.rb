@@ -51,6 +51,7 @@ class LocationManagementSystem < Grape::API
 		locations.delete_if { | l | l[:id] == params["id"].to_i }
 		if locations.length < size
 			# Successfully deleted location
+			id -= 1
 			size = locations.length
 			status 200
 		else

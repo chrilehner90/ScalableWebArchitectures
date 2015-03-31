@@ -50,6 +50,7 @@ class ItemTrackingSystem < Grape::API
 		items.delete_if { | l | l[:id] == params["id"].to_i }
 		if items.length < size
 			# Successfully deleted item
+			id -= 1
 			size = items.length
 			status 200
 		else
